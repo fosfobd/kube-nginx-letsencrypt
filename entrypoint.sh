@@ -42,25 +42,30 @@ cat /secret-patch-template.json | \
 
 ls /secret-patch.json || exit 1
 
-echo  "update secret"
-RESP=`curl -v --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" -k -v -XPATCH  -H "Accept: application/json, */*" -H "Content-Type: application/strategic-merge-patch+json" -d @/secret-patch.json https://kubernetes.default/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET}`
-CODE=`echo $RESP | jq -r '.code'`
+echo "Try to create secret"
+RESP=`curl -v --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" -k -v -XPOST  -H "Accept: application/json, */*" -H "Content-Type: application/json" -d @/secret-patch.json https://kubernetes.default/api/v1/namespaces/${NAMESPACE}/secrets`
+echo $RESP
 
-case $CODE in
-200)
-	echo "Secret Updated"
-	exit 0
-	;;
-404)
-	echo "Secret doesn't exist"
-	echo "Create secret ${SECRET}"
-	RESP=`curl -v --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" -k -v -XPOST  -H "Accept: application/json, */*" -H "Content-Type: application/json" -d @/secret-patch.json https://kubernetes.default/api/v1/namespaces/${NAMESPACE}/secrets`
-	echo $RESP
-	# echo "Create secret ${SECRET}"
-	;;
-*)
-	echo "Unknown Error:"
-	echo $RESP
-	exit 1
-	;;
-esac
+
+# echo  "update secret"
+# RESP=`curl -v --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" -k -v -XPATCH  -H "Accept: application/json, */*" -H "Content-Type: application/strategic-merge-patch+json" -d @/secret-patch.json https://kubernetes.default/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET}`
+# CODE=`echo $RESP | jq -r '.code'`
+
+# case $CODE in
+# 200)
+# 	echo "Secret Updated"
+# 	exit 0
+# 	;;
+# 404)
+# 	echo "Secret doesn't exist"
+# 	echo "Create secret ${SECRET}"
+# 	RESP=`curl -v --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" -k -v -XPOST  -H "Accept: application/json, */*" -H "Content-Type: application/json" -d @/secret-patch.json https://kubernetes.default/api/v1/namespaces/${NAMESPACE}/secrets`
+# 	echo $RESP
+# 	# echo "Create secret ${SECRET}"
+# 	;;
+# *)
+# 	echo "Unknown Error:"
+# 	echo $RESP
+# 	exit 1
+# 	;;
+# esac
