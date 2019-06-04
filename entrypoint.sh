@@ -48,31 +48,27 @@ echo $RESP
 CODE=`echo $RESP | jq -r '.code'`
 KIND=`echo $RESP | jq -r '.kind'`
 
-case $CODE in
-409)
+if [ $CODE = 409 ]; then
 	echo "Secret already exist"
 	RESP2=`curl -v --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" -k -v -XPATCH  -H "Accept: application/json, */*" -H "Content-Type: application/strategic-merge-patch+json" -d @/secret-patch.json https://kubernetes.default/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET}`
 	CODE2=`echo $RESP2 | jq -r '.code'`
-	case $CODE2 in
-	200)
+	if [ $CODE2 = 200 ]; then
 		echo "Secret Updated"
 		exit 0
-		;;
-	*)
+	else
 		echo "Failed to update secret"
 		echo "Unknown Error:"
 		echo $RESP2
 		exit 1
-		;;
-*)
-	case $KIND in
-	"Secret")
+	fi
+else
+	if [ $KIND = "Secret" ]; then
 		echo "Secret Created"
 		exit 0
-		;;
-	*)
+	else
 		echo "Failed to create secret"
 		echo "Unknown Error:"
 		echo $RESP
 		exit 1
-		;;
+	fi
+fi
