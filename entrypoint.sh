@@ -45,27 +45,36 @@ ls /secret-patch.json || exit 1
 echo "Try to create secret"
 RESP=`curl -v --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" -k -v -XPOST  -H "Accept: application/json, */*" -H "Content-Type: application/json" -d @/secret-patch.json https://kubernetes.default/api/v1/namespaces/${NAMESPACE}/secrets`
 echo $RESP
+CODE=`echo $RESP | jq -r '.code'`
+KIND=`echo $RESP | jq -r '.kind'`
 
-
-# echo  "update secret"
-# RESP=`curl -v --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" -k -v -XPATCH  -H "Accept: application/json, */*" -H "Content-Type: application/strategic-merge-patch+json" -d @/secret-patch.json https://kubernetes.default/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET}`
-# CODE=`echo $RESP | jq -r '.code'`
-
-# case $CODE in
-# 200)
-# 	echo "Secret Updated"
-# 	exit 0
-# 	;;
-# 404)
-# 	echo "Secret doesn't exist"
-# 	echo "Create secret ${SECRET}"
-# 	RESP=`curl -v --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" -k -v -XPOST  -H "Accept: application/json, */*" -H "Content-Type: application/json" -d @/secret-patch.json https://kubernetes.default/api/v1/namespaces/${NAMESPACE}/secrets`
-# 	echo $RESP
-# 	# echo "Create secret ${SECRET}"
-# 	;;
-# *)
-# 	echo "Unknown Error:"
-# 	echo $RESP
-# 	exit 1
-# 	;;
-# esac
+case $CODE in
+409)
+	echo "Secret already exist"
+	RESP2=`curl -v --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" -k -v -XPATCH  -H "Accept: application/json, */*" -H "Content-Type: application/strategic-merge-patch+json" -d @/secret-patch.json https://kubernetes.default/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET}`
+	CODE2=`echo $RESP2 | jq -r '.code'`
+	case $CODE2 in
+	200)
+		echo "Secret Updated"
+		exit 0
+		;;
+	*)
+		echo "Failed to update secret"
+		echo "Unknown Error:"
+		echo $RESP2
+		exit 1
+		;;
+	;;
+*)
+	case $KIND in
+	"Secret")
+		echo "Secret Created"
+		exit 0
+		;;
+	*)
+		echo "Failed to create secret"
+		echo "Unknown Error:"
+		echo $RESP
+		exit 1
+		;;
+	;;
