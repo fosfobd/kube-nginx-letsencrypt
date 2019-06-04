@@ -64,7 +64,6 @@ case $CODE in
 		echo $RESP2
 		exit 1
 		;;
-	;;
 *)
 	case $KIND in
 	"Secret")
