@@ -74,7 +74,7 @@ if [ $DEST = 'secret' ]; then
 			exit 1
 		fi
 	fi
-elif 
+elif [ $DEST = 'secret' ]; then
 # Write Certificate in Vault Server
 
 	CERTFILE=${CERTPATH}/fullchain.pem
