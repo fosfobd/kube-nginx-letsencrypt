@@ -13,7 +13,7 @@ elif [ $DEST = 'vault' ]; then
 		exit 1
 	fi
 else
-	echo "$DEST not know, valid is secret (default) or vault"
+	echo "DEST: $DEST not know, valid is secret (default) or vault"
 	exit 1
 fi
 
