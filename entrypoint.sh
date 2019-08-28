@@ -22,7 +22,7 @@ NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 cd $HOME
 
 echo "Listen python"
-python -m SimpleHTTPServer 80 &
+python -m http.server 80 &
 sleep 60
 
 echo "End sleep starting certbot"
