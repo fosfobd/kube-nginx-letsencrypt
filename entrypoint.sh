@@ -1,8 +1,19 @@
 #!/bin/bash
 
-if [[ -z $EMAIL || -z $DOMAINS || -z $SECRET ]]; then
-	echo "EMAIL, DOMAINS, SECERT env vars required"
-	env
+if [ $DEST = 'secret' ]; then
+	if [[ -z $EMAIL || -z $DOMAINS || -z $SECRET ]]; then
+		echo "EMAIL, DOMAINS, SECERT env vars required"
+		env
+		exit 1
+	fi
+elif [ $DEST = 'vault' ]; then
+	if [[ -z $EMAIL || -z $DOMAINS || -z $VAULT_TOKEN || -z $VAULT_PATH ]]; then
+		echo "EMAIL, DOMAINS, SECERT env vars required"
+		env
+		exit 1
+	fi
+else
+	echo "$DEST not know, valid is secret (default) or vault"
 	exit 1
 fi
 
