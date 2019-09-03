@@ -1,21 +1,21 @@
 #!/bin/bash
 
-if [ $DEST = 'secret' ]; then
+# if [ $DEST = 'secret' ]; then
 	if [[ -z $EMAIL || -z $DOMAINS || -z $SECRET ]]; then
 		echo "EMAIL, DOMAINS, SECERT env vars required"
 		env
 		exit 1
 	fi
-elif [ $DEST = 'vault' ]; then
-	if [[ -z $EMAIL || -z $DOMAINS || -z $VAULT_TOKEN || -z $VAULT_PATH ]]; then
-		echo "EMAIL, DOMAINS, SECERT env vars required"
-		env
-		exit 1
-	fi
-else
-	echo "DEST: $DEST not know, valid is secret (default) or vault"
-	exit 1
-fi
+# elif [ $DEST = 'vault' ]; then
+# 	if [[ -z $EMAIL || -z $DOMAINS || -z $VAULT_TOKEN || -z $VAULT_PATH ]]; then
+# 		echo "EMAIL, DOMAINS, SECERT env vars required"
+# 		env
+# 		exit 1
+# 	fi
+# else
+# 	echo "DEST: $DEST not know, valid is secret (default) or vault"
+# 	exit 1
+# fi
 
 NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 
@@ -44,7 +44,7 @@ CERTPATH=/etc/letsencrypt/live/$(echo $DOMAINS | cut -f1 -d',')
 
 ls $CERTPATH || exit 1
 
-if [ $DEST = 'secret' ]; then
+# if [ $DEST = 'secret' ]; then
 # Write Certificate in Kubernetes Secret
 	cat /secret-patch-template.json | \
 		sed "s/NAMESPACE/${NAMESPACE}/" | \
@@ -85,16 +85,16 @@ if [ $DEST = 'secret' ]; then
 			exit 1
 		fi
 	fi
-elif [ $DEST = 'vault' ]; then
-# Write Certificate in Vault Server
+# elif [ $DEST = 'vault' ]; then
+# # Write Certificate in Vault Server
 
-	CERTFILE=${CERTPATH}/fullchain.pem
-	KEYFILE=${CERTPATH}/privkey.pem
+# 	CERTFILE=${CERTPATH}/fullchain.pem
+# 	KEYFILE=${CERTPATH}/privkey.pem
 
-	echo "Push Certificate to Vault"
-	DEBUG=`curl -H "X-Vault-Token: $VAULT_TOKEN" -H "Content-Type: application/json" -X POST -d '{"ssl_certificate":"$(cat ${CERTFILE})"}' $VAULT_PATH`
-	echo $DEBUG
-	echo "Push Key to Vault"
-	DEBUG2=`curl -H "X-Vault-Token: $VAULT_TOKEN" -H "Content-Type: application/json" -X POST -d '{"ssl_key":"$(cat ${KEYFILE})"}' $VAULT_PATH`
-	echo $DEBUG2
-fi
+# 	echo "Push Certificate to Vault"
+# 	DEBUG=`curl -H "X-Vault-Token: $VAULT_TOKEN" -H "Content-Type: application/json" -X POST -d '{"ssl_certificate":"$(cat ${CERTFILE})"}' $VAULT_PATH`
+# 	echo $DEBUG
+# 	echo "Push Key to Vault"
+# 	DEBUG2=`curl -H "X-Vault-Token: $VAULT_TOKEN" -H "Content-Type: application/json" -X POST -d '{"ssl_key":"$(cat ${KEYFILE})"}' $VAULT_PATH`
+# 	echo $DEBUG2
+# fi
