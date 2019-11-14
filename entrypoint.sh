@@ -63,6 +63,9 @@ ls $CERTPATH || exit 1
 
 	if [ $CODE = 409 ]; then
 		echo "Secret already exist"
+		if [ $OVERWRITE = 'false' ]; then
+			exit 0
+		fi
 		RESP2=`curl -v --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" -k -v -XPATCH  -H "Accept: application/json, */*" -H "Content-Type: application/strategic-merge-patch+json" -d @/secret-patch.json https://kubernetes.default/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET}`
 		KIND2=`echo $RESP2 | jq -r '.kind'`
 		if [ $KIND2 = "Secret" ]; then
