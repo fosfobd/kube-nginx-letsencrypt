@@ -8,7 +8,7 @@ These Secrets can be loaded as volumes in other K8s entities to use them for SSL
 These files can be customized to generate all entities needed for the K8s Job to work correctly.
 
 ### Publish Docker image to ECR
-```
+```shell
 #!/usr/bin/env bash
 
 # use this to get login credentials before pusing an ecr image
@@ -20,7 +20,7 @@ docker buildx create --use
 ```
 
 ### Role
-```
+```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -33,7 +33,7 @@ rules:
 ```
 
 ### RoleBinding
-```
+```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -50,7 +50,7 @@ roleRef:
 ```
 
 ### ServiceAccount
-```
+```yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -59,7 +59,7 @@ metadata:
 ```
 
 ### Secret
-```
+```yaml
 apiVersion: v1
 kind: Secret
 metadata:
@@ -69,7 +69,7 @@ immutable: false
 ```
 
 ### Service
-```
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -87,7 +87,7 @@ spec:
 ### Job
 Before deploying the job, remember to build and publish your image to ECR.
 
-```
+```yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
