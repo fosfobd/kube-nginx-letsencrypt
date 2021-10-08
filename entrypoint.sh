@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-if [[ -z $EMAIL || -z $DOMAINS || -z $SECRET ]]; then
-	echo "EMAIL, DOMAINS, SECRET env vars required"
+if [[ -z $EMAIL || -z $DOMAINS || -z $SECRET || -z $OVERWRITE ]]; then
+	echo "EMAIL, DOMAINS, SECRET, OVERWRITE env vars required"
 	env
 	exit 1
 fi
@@ -19,91 +19,13 @@ PID=$!
 
 if [ $STAGING ]; then
 	if [ $STAGING = true ]; then
-		if [ $DNS ]; then
-			if [ $DNS = true ]; then
-				certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade --preferred-challenges=dns -d ${DOMAINS} --staging
-			else
-				certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS} --staging
-			fi
-		else
-			certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS} --staging
-		fi
-	else
-		if [ $DNS ]; then
-			if [ $DNS = true ]; then
-				certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade --preferred-challenges=dns -d ${DOMAINS}
-			else
-				certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
-			fi
-		else
-			certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
-		fi
-	fi
-else
-	if [ $DNS ]; then
-		if [ $DNS = true ]; then
-			certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade --preferred-challenges=dns -d ${DOMAINS}
-		else
-			certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
-		fi
+		certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS} --staging
 	else
 		certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
 	fi
+else
+	certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
 fi
-
-# if [ $STAGING ]; then
-# 	if [ $STAGING = true ]; then
-# 		if [ $DNS ]; then
-# 			if [ $DNS = true ]; then
-# 				certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade --preferred-challenges=dns -d ${DOMAINS} --staging
-# 			else
-# 				certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS} --staging
-# 			fi
-# 		else
-# 			certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS} --staging
-# 		fi
-# 	else
-# 		if [ $DNS ]; then
-# 			if [ $DNS = true ]; then
-# 				certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade --preferred-challenges=dns -d ${DOMAINS}
-# 			else
-# 				certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
-# 			fi
-# 		else
-# 			certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
-# 		fi
-# 	fi
-# else
-# 	if [ $DNS ]; then
-# 		if [ $DNS = true ]; then
-# 			certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade --preferred-challenges=dns -d ${DOMAINS}
-# 		else
-# 			certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
-# 		fi
-# 	else
-# 		certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
-# 	fi
-# fi
-
-# if [ $STAGING ]; then
-# 	if [ $STAGING = true ]; then
-# 		certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS} --staging
-# 	else
-# 		certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
-# 	fi
-# else
-# 	certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
-# fi
-
-# if [ $DNS ]; then
-# 	if [ $DNS = true ]; then
-# 		certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade --preferred-challenges=dns -d ${DOMAINS}
-# 	else 	
-# 		certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
-# 	fi
-# else
-# 	certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
-# fi
 
 kill $PID
 

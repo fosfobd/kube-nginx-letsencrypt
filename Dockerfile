@@ -9,6 +9,5 @@ COPY deployment-patch-template.json /
 COPY entrypoint.sh /
 
 ENV DEST=secret
-ENV OVERWRITE=false
 
 CMD ["/entrypoint.sh"]
